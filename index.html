@@ -1,0 +1,2383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitUniverse — GitHub 资源大本营 v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   TOKENS & RESET
+══════════════════════════════════════════ */
+:root {
+  --bg:       #f6f3ee;
+  --surface:  #ede9e1;
+  --card:     #faf8f4;
+  --border:   #d8d2c6;
+  --border2:  #e8e3da;
+  --ink:      #1c1e24;
+  --ink2:     #3a3d47;
+  --muted:    #7a7568;
+  --light:    #b0a898;
+  --gold:     #b8892a;
+  --gold-bg:  rgba(184,137,42,0.10);
+  --teal:     #257a6a;
+  --teal-bg:  rgba(37,122,106,0.10);
+  --rust:     #b84a2a;
+  --rust-bg:  rgba(184,74,42,0.10);
+  --navy:     #1e3a5f;
+  --blue:     #2a5aa0;
+  --blue-bg:  rgba(42,90,160,0.10);
+  --r:        4px;
+  --shadow-sm: 0 1px 4px rgba(28,30,36,0.06);
+  --shadow-md: 0 4px 16px rgba(28,30,36,0.10);
+  --shadow-lg: 0 12px 40px rgba(28,30,36,0.14);
+  --trans:    all 0.18s ease;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; font-size:14px; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; font-family: inherit; }
+input, textarea { font-family: inherit; }
+ul, ol { list-style: none; }
+
+/* ══════════════════════════════════════════
+   SCROLLBAR
+══════════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ══════════════════════════════════════════
+   LAYOUT SHELL
+══════════════════════════════════════════ */
+.app-shell {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  min-height: 100vh;
+}
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 28px; }
+
+/* ══════════════════════════════════════════
+   TOP NAV
+══════════════════════════════════════════ */
+.topnav {
+  background: var(--ink);
+  color: #fff;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: var(--shadow-md);
+}
+.topnav-inner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 52px;
+}
+.brand {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+  padding-right: 28px;
+  border-right: 1px solid rgba(255,255,255,0.10);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.brand em { color: var(--gold); font-style: italic; }
+.brand-badge {
+  font-size: 9px;
+  background: var(--gold);
+  color: #000;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  font-style: normal;
+  vertical-align: middle;
+}
+.nav-tabs {
+  display: flex;
+  height: 100%;
+  margin-left: 4px;
+}
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 18px;
+  height: 100%;
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  border-bottom: 2px solid transparent;
+  transition: var(--trans);
+  white-space: nowrap;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+.nav-tab:hover { color: rgba(255,255,255,0.85); }
+.nav-tab.active { color: #fff; border-bottom-color: var(--gold); }
+.nav-tab .tab-icon { font-size: 14px; }
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fav-counter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  padding: 5px 12px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--trans);
+}
+.fav-counter:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.fav-counter .fav-num {
+  background: var(--gold);
+  color: #000;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 0 6px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* ══════════════════════════════════════════
+   HERO SEARCH ZONE
+══════════════════════════════════════════ */
+.hero-zone {
+  background: var(--ink);
+  padding: 40px 0 32px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-zone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 600px 300px at 80% 50%, rgba(184,137,42,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 400px at 20% 80%, rgba(37,122,106,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+/* subtle dot grid */
+.hero-zone::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+.hero-content { position: relative; z-index: 1; }
+.hero-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.hero-headline {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(26px, 4vw, 44px);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.hero-headline em { color: var(--gold); font-style: italic; }
+.hero-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 8px;
+  max-width: 480px;
+  line-height: 1.7;
+}
+.hero-stats {
+  display: flex;
+  gap: 24px;
+  flex-shrink: 0;
+}
+.hstat {
+  text-align: right;
+}
+.hstat-n {
+  font-family: 'Fraunces', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+.hstat-l {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: .06em;
+  margin-top: 2px;
+}
+
+/* ── UNIFIED SEARCH BAR ── */
+.search-bar {
+  display: flex;
+  gap: 0;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--r);
+  overflow: hidden;
+  background: rgba(255,255,255,0.05);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-bar:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184,137,42,0.15);
+}
+.search-bar-icon {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 17px;
+  color: rgba(255,255,255,0.25);
+  flex-shrink: 0;
+}
+#mainSearch {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 14px;
+  padding: 14px 0;
+  min-width: 0;
+}
+#mainSearch::placeholder { color: rgba(255,255,255,0.28); }
+.search-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-left: 1px solid rgba(255,255,255,0.10);
+  flex-shrink: 0;
+}
+.smt-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.35);
+  font-size: 11px;
+  padding: 0 12px;
+  height: 100%;
+  transition: var(--trans);
+  white-space: nowrap;
+  letter-spacing: .03em;
+}
+.smt-btn:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.05); }
+.smt-btn.active { color: var(--gold); background: rgba(184,137,42,0.08); }
+.search-exec-btn {
+  background: var(--gold);
+  border: none;
+  color: #000;
+  font-family: 'Fraunces', serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0 28px;
+  transition: var(--trans);
+  white-space: nowrap;
+}
+.search-exec-btn:hover { background: #d4a040; }
+
+/* quick tags row */
+.quick-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 14px;
+}
+.qtag {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.45);
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--trans);
+}
+.qtag:hover { background: rgba(184,137,42,0.15); color: var(--gold); border-color: rgba(184,137,42,0.3); }
+
+/* ══════════════════════════════════════════
+   MAIN BODY — sidebar + content
+══════════════════════════════════════════ */
+.body-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  align-items: start;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: sticky;
+  top: 52px;
+  height: calc(100vh - 52px);
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 16px 0 32px;
+}
+.sb-section { margin-bottom: 4px; }
+.sb-label {
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--light);
+  padding: 12px 18px 4px;
+}
+.sb-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 18px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: var(--trans);
+  border-left: 2px solid transparent;
+  gap: 6px;
+}
+.sb-item:hover { background: var(--bg); color: var(--ink); }
+.sb-item.active { background: var(--bg); color: var(--ink); border-left-color: var(--gold); font-weight: 500; }
+.sb-item-left { display: flex; align-items: center; gap: 7px; }
+.sb-icon { font-size: 13px; flex-shrink: 0; }
+.sb-badge {
+  font-size: 10px;
+  background: var(--border2);
+  color: var(--muted);
+  padding: 1px 7px;
+  border-radius: 10px;
+  margin-left: auto;
+}
+.sb-item.active .sb-badge { background: var(--gold); color: #fff; }
+.sb-divider { height: 1px; background: var(--border); margin: 8px 18px; }
+
+/* ── CONTENT ── */
+.content-area {
+  min-height: calc(100vh - 52px);
+  padding: 24px 28px 48px;
+}
+
+/* ══════════════════════════════════════════
+   TAB PANELS (main tabs)
+══════════════════════════════════════════ */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ══════════════════════════════════════════
+   PANEL HEADER ROW
+══════════════════════════════════════════ */
+.panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.panel-title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+.panel-sub { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.6; }
+.panel-tools {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.icon-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
+  padding: 5px 12px;
+  border-radius: var(--r);
+  transition: var(--trans);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.icon-btn:hover { border-color: var(--gold); color: var(--ink); }
+.icon-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* ══════════════════════════════════════════
+   TOOL CARDS
+══════════════════════════════════════════ */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 14px;
+}
+.tools-grid.list { grid-template-columns: 1fr; }
+
+.tool-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  transition: var(--trans);
+  position: relative;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadeUp .28s forwards;
+}
+@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+.tool-card:hover {
+  border-color: var(--gold);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.tool-card.favorited { border-color: var(--gold); }
+.tool-card.favorited::before {
+  content: '★';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  color: var(--gold);
+  font-size: 13px;
+}
+
+/* card top row */
+.tc-row1 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.tc-identity { display: flex; align-items: flex-start; gap: 10px; flex: 1; min-width: 0; }
+.tc-emoji { font-size: 22px; flex-shrink: 0; line-height: 1; margin-top: 2px; }
+.tc-name {
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  line-height: 1.2;
+}
+.tc-url {
+  font-size: 10px;
+  color: var(--light);
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+.tc-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.score-badge {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Fraunces', serif;
+  padding: 2px 10px;
+  border-radius: var(--r);
+  line-height: 1.3;
+}
+.type-badge {
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  white-space: nowrap;
+  letter-spacing: .04em;
+}
+
+/* desc */
+.tc-desc {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+/* pros/cons two-col */
+.tc-proscons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 11px;
+}
+.tc-pros li::before { content: '✓ '; color: var(--teal); }
+.tc-cons li::before { content: '✗ '; color: var(--rust); }
+.tc-pros li, .tc-cons li { padding-left: 0; color: var(--muted); line-height: 1.6; margin-bottom: 2px; }
+.pc-head { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--light); margin-bottom: 4px; }
+
+/* scenarios */
+.tc-scenarios {
+  margin-bottom: 12px;
+}
+.tc-scenarios-label { font-size: 10px; color: var(--light); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
+.tc-scenario-chip {
+  display: inline-block;
+  background: var(--blue-bg);
+  color: var(--blue);
+  border: 1px solid rgba(42,90,160,0.15);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-right: 4px;
+  margin-bottom: 3px;
+}
+
+/* tags + actions row */
+.tc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tc-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tc-tag {
+  font-size: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  padding: 1px 8px;
+  border-radius: 2px;
+}
+.tc-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.tc-btn {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--muted);
+  transition: var(--trans);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tc-btn:hover { border-color: var(--gold); color: var(--ink); }
+.tc-btn.fav-btn.active { background: var(--gold-bg); border-color: var(--gold); color: var(--gold); }
+.tc-btn.go-btn { background: var(--ink); color: #fff; border-color: var(--ink); }
+.tc-btn.go-btn:hover { background: var(--navy); }
+
+/* list mode overrides */
+.tools-grid.list .tool-card { padding: 14px 18px; }
+.tools-grid.list .tc-proscons { display: none; }
+.tools-grid.list .tc-scenarios { display: none; }
+.tools-grid.list .tc-desc { margin-bottom: 8px; }
+
+/* ══════════════════════════════════════════
+   COMPARE TABLE
+══════════════════════════════════════════ */
+.compare-wrap { overflow-x: auto; }
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.compare-table thead th {
+  background: var(--ink);
+  color: rgba(255,255,255,0.85);
+  padding: 10px 14px;
+  text-align: left;
+  font-family: 'Fraunces', serif;
+  font-size: 12px;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+.compare-table thead th:first-child { min-width: 160px; position: sticky; left: 0; z-index: 2; }
+.compare-table tbody tr { border-bottom: 1px solid var(--border2); transition: background .12s; }
+.compare-table tbody tr:hover { background: var(--surface); }
+.compare-table tbody td {
+  padding: 9px 14px;
+  color: var(--muted);
+  vertical-align: middle;
+}
+.compare-table tbody td:first-child {
+  color: var(--ink);
+  font-weight: 500;
+  background: var(--card);
+  position: sticky;
+  left: 0;
+  border-right: 1px solid var(--border);
+  font-family: 'Fraunces', serif;
+  font-size: 12px;
+}
+.cell-y { color: var(--teal); font-weight: 600; }
+.cell-n { color: var(--light); }
+.cell-p { color: var(--gold); }
+.score-cell { font-family: 'Fraunces', serif; font-weight: 700; font-size: 13px; }
+
+/* ══════════════════════════════════════════
+   WORKFLOW GUIDE
+══════════════════════════════════════════ */
+.workflow-panel { }
+.wf-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.wf-step {
+  padding: 20px 22px;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  transition: var(--trans);
+  position: relative;
+}
+.wf-step:last-child { border-right: none; }
+.wf-step:hover { background: var(--surface); }
+.wf-step.active { background: var(--ink); }
+.wf-step-num {
+  font-size: 11px;
+  color: var(--light);
+  margin-bottom: 8px;
+  letter-spacing: .08em;
+}
+.wf-step.active .wf-step-num { color: rgba(255,255,255,0.4); }
+.wf-step-icon { font-size: 24px; margin-bottom: 8px; }
+.wf-step-name {
+  font-family: 'Fraunces', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.wf-step.active .wf-step-name { color: #fff; }
+.wf-step-desc { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.wf-step.active .wf-step-desc { color: rgba(255,255,255,0.55); }
+.wf-step-arrow {
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--border);
+  color: var(--muted);
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  z-index: 1;
+}
+
+/* workflow detail */
+.wf-detail {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 24px 28px;
+  display: none;
+}
+.wf-detail.active { display: block; }
+.wf-detail-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.wf-detail-intro { font-size: 12px; color: var(--muted); line-height: 1.7; margin-bottom: 20px; }
+.wf-combos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.wf-combo {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: var(--trans);
+}
+.wf-combo:hover { border-color: var(--gold); box-shadow: var(--shadow-sm); }
+.wf-combo-name {
+  font-family: 'Fraunces', serif;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.combo-badge {
+  font-size: 9px;
+  background: var(--gold-bg);
+  color: var(--gold);
+  border: 1px solid rgba(184,137,42,0.2);
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+.wf-combo-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+.wf-combo-tool {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 3px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: var(--trans);
+}
+.wf-combo-tool:hover { border-color: var(--gold); color: var(--ink); }
+.wf-combo-desc { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.wf-tips {
+  background: var(--teal-bg);
+  border: 1px solid rgba(37,122,106,0.2);
+  border-radius: var(--r);
+  padding: 14px 18px;
+}
+.wf-tips-title {
+  font-size: 11px;
+  color: var(--teal);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 8px;
+}
+.wf-tip { font-size: 11.5px; color: var(--ink2); line-height: 1.7; padding-left: 14px; position: relative; margin-bottom: 3px; }
+.wf-tip::before { content: '→'; position: absolute; left: 0; color: var(--teal); }
+
+/* ══════════════════════════════════════════
+   FAVOURITES PANEL
+══════════════════════════════════════════ */
+.favs-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+.favs-empty-icon { font-size: 40px; margin-bottom: 14px; opacity: .35; }
+.favs-empty p { font-size: 13px; line-height: 1.8; }
+.favs-note-area {
+  display: block;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--ink);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 8px 10px;
+  resize: none;
+  margin-top: 6px;
+  transition: border-color .15s;
+  min-height: 52px;
+}
+.favs-note-area:focus { outline: none; border-color: var(--gold); }
+.fav-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  transition: var(--trans);
+}
+.fav-item:hover { border-color: var(--gold); }
+.fav-item-main { flex: 1; min-width: 0; }
+.fav-item-name {
+  font-family: 'Fraunces', serif;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.fav-item-desc { font-size: 11px; color: var(--muted); line-height: 1.6; margin-bottom: 6px; }
+.fav-item-actions { display: flex; gap: 6px; }
+
+/* ══════════════════════════════════════════
+   SEARCH RESULTS PANEL
+══════════════════════════════════════════ */
+.search-results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sr-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; }
+.sr-count { font-size: 12px; color: var(--muted); }
+.sr-platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.sr-platform-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: var(--trans);
+  color: var(--muted);
+}
+.sr-platform-chip:hover { border-color: var(--gold); color: var(--ink); }
+.sr-platform-chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.sr-result-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  transition: var(--trans);
+  opacity: 0;
+  animation: fadeUp .25s forwards;
+}
+.sr-result-card:hover { border-color: var(--gold); box-shadow: var(--shadow-sm); }
+.src-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.src-title {
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--blue);
+}
+.src-title:hover { color: var(--navy); text-decoration: underline; }
+.src-source {
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--surface);
+  padding: 2px 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.src-desc { font-size: 12px; color: var(--muted); line-height: 1.7; margin-bottom: 8px; }
+.src-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--light);
+  flex-wrap: wrap;
+}
+.src-meta span { display: flex; align-items: center; gap: 4px; }
+
+/* AI insight panel */
+.ai-insight {
+  background: linear-gradient(135deg, rgba(184,137,42,0.06) 0%, rgba(37,122,106,0.04) 100%);
+  border: 1px solid rgba(184,137,42,0.2);
+  border-radius: var(--r);
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  display: none;
+}
+.ai-insight.visible { display: block; }
+.ai-insight-label {
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.ai-spin {
+  width: 10px; height: 10px;
+  border: 1.5px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.ai-spin.on { display: block; }
+.ai-text { font-size: 12px; color: var(--ink2); line-height: 1.8; white-space: pre-wrap; }
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(28,30,36,0.55);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-backdrop.open { display: flex; }
+.modal-box {
+  background: var(--card);
+  border-radius: 6px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn .2s ease;
+}
+@keyframes modalIn { from { opacity:0; transform:scale(.96) translateY(12px); } }
+.modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 22px 26px 16px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  z-index: 1;
+}
+.modal-name { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+.modal-url { font-size: 11px; color: var(--light); margin-top: 3px; }
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--muted);
+  padding: 4px 8px;
+  border-radius: var(--r);
+  transition: var(--trans);
+}
+.modal-close:hover { background: var(--surface); color: var(--ink); }
+.modal-body { padding: 22px 26px 28px; }
+.modal-section { margin-bottom: 22px; }
+.modal-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .10em;
+  color: var(--light);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.modal-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.modal-desc { font-size: 13px; color: var(--ink2); line-height: 1.8; }
+.modal-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.modal-feature {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  padding: 7px 10px;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+}
+.modal-feature.yes { color: var(--teal); background: var(--teal-bg); border-color: rgba(37,122,106,0.2); }
+.modal-feature.no  { color: var(--light); background: var(--surface); }
+.modal-pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.mpc-col h4 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+.mpc-col.pros h4 { color: var(--teal); }
+.mpc-col.cons h4 { color: var(--rust); }
+.mpc-col li { font-size: 12px; color: var(--muted); line-height: 1.7; padding-left: 14px; position: relative; margin-bottom: 3px; }
+.mpc-col.pros li::before { content: '✓'; position: absolute; left: 0; color: var(--teal); }
+.mpc-col.cons li::before { content: '✗'; position: absolute; left: 0; color: var(--rust); }
+.modal-scenario-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.modal-scenario { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(42,90,160,0.15); font-size: 11px; padding: 4px 12px; border-radius: 3px; }
+.modal-combos-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.modal-combo-tag { background: var(--gold-bg); color: var(--gold); border: 1px solid rgba(184,137,42,0.2); font-size: 11px; padding: 4px 12px; border-radius: 3px; cursor: pointer; transition: var(--trans); }
+.modal-combo-tag:hover { background: var(--gold); color: #fff; }
+.modal-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ink);
+  color: #fff;
+  padding: 11px 24px;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 4px;
+  transition: var(--trans);
+}
+.modal-cta:hover { background: var(--navy); }
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 22px 0;
+}
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.footer-brand { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; }
+.footer-note { font-size: 11px; color: var(--light); }
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: #fff;
+  font-size: 12px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transition: all .25s;
+  z-index: 9999;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ══════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════ */
+.empty-state {
+  text-align: center;
+  padding: 52px 20px;
+  color: var(--muted);
+}
+.empty-state-icon { font-size: 36px; margin-bottom: 14px; opacity: .3; }
+.empty-state p { font-size: 13px; line-height: 1.8; }
+
+@media (max-width: 900px) {
+  .body-grid { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; display: flex; flex-wrap: wrap; padding: 8px; gap: 4px; border-right: none; border-bottom: 1px solid var(--border); }
+  .sb-label { display: none; }
+  .sb-item { padding: 5px 12px; border-left: none; border-radius: 20px; font-size: 11px; }
+  .sb-item.active { background: var(--ink); color: #fff; }
+  .sb-divider { display: none; }
+  .hero-stats { display: none; }
+  .tc-proscons { grid-template-columns: 1fr; }
+  .modal-features-grid { grid-template-columns: 1fr 1fr; }
+  .modal-pros-cons { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOP NAV ══ -->
+<div class="app-shell">
+<nav class="topnav">
+  <div class="wrap topnav-inner">
+    <div class="brand">Git<em>Universe</em> <span class="brand-badge">v2</span></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('discover',this)">
+        <span class="tab-icon">🔭</span> 发现平台
+      </button>
+      <button class="nav-tab" onclick="switchTab('workflow',this)">
+        <span class="tab-icon">🗺️</span> 工作流向导
+      </button>
+      <button class="nav-tab" onclick="switchTab('compare',this)">
+        <span class="tab-icon">⚖️</span> 功能对比
+      </button>
+      <button class="nav-tab" onclick="switchTab('favourites',this)">
+        <span class="tab-icon">★</span> 我的收藏
+      </button>
+    </div>
+    <div class="nav-right">
+      <div class="fav-counter" onclick="switchTabById('favourites')">
+        ★ 收藏 <span class="fav-num" id="favCount">0</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ HERO SEARCH ══ -->
+<section class="hero-zone">
+  <div class="wrap hero-content">
+    <div class="hero-top">
+      <div>
+        <div class="hero-headline">找到你需要的<br><em>任何</em> GitHub 资源</div>
+        <div class="hero-sub">聚合 34 个顶级平台 · 统一搜索 · 工作流引导 · 收藏标注 · 一站式操作</div>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><div class="hstat-n">34</div><div class="hstat-l">整合平台</div></div>
+        <div class="hstat"><div class="hstat-n">8</div><div class="hstat-l">资源类型</div></div>
+        <div class="hstat"><div class="hstat-n">6</div><div class="hstat-l">工作流场景</div></div>
+      </div>
+    </div>
+    <!-- unified search -->
+    <div class="search-bar">
+      <div class="search-bar-icon">⌕</div>
+      <input type="text" id="mainSearch" placeholder="搜索平台名称、功能、领域……如"Python 包"、"代码搜索"、"趋势排行"" />
+      <div class="search-mode-toggle">
+        <button class="smt-btn active" id="modeFilter" onclick="setSearchMode('filter',this)">筛选平台</button>
+        <button class="smt-btn" id="modeAI" onclick="setSearchMode('ai',this)">AI 推荐</button>
+      </div>
+      <button class="search-exec-btn" onclick="execSearch()">搜索</button>
+    </div>
+    <div class="quick-tags">
+      <span class="qtag" onclick="fillSearch('路径规划 Python')">路径规划 Python</span>
+      <span class="qtag" onclick="fillSearch('JavaScript 新库 趋势')">JS 新库趋势</span>
+      <span class="qtag" onclick="fillSearch('Rust 几何计算')">Rust 几何计算</span>
+      <span class="qtag" onclick="fillSearch('自托管 开源替代')">自托管替代品</span>
+      <span class="qtag" onclick="fillSearch('代码搜索 正则')">代码搜索</span>
+      <span class="qtag" onclick="fillSearch('Star 增长趋势')">Star 趋势</span>
+      <span class="qtag" onclick="fillSearch('Java Maven 依赖')">Java 依赖</span>
+      <span class="qtag" onclick="fillSearch('中文 开源项目')">中文开源</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MAIN BODY ══ -->
+<div class="wrap" style="padding-top:0;padding-bottom:0;">
+<div class="body-grid">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-label">类型筛选</div>
+      <div class="sb-item active" onclick="setType('all',this)">
+        <div class="sb-item-left"><span class="sb-icon">🌐</span> 全部平台</div>
+        <span class="sb-badge">34</span>
+      </div>
+      <div class="sb-item" onclick="setType('discovery',this)">
+        <div class="sb-item-left"><span class="sb-icon">🔭</span> 发现 · 导航</div>
+        <span class="sb-badge">7</span>
+      </div>
+      <div class="sb-item" onclick="setType('ranking',this)">
+        <div class="sb-item-left"><span class="sb-icon">📈</span> 排行 · 热度</div>
+        <span class="sb-badge">6</span>
+      </div>
+      <div class="sb-item" onclick="setType('curated',this)">
+        <div class="sb-item-left"><span class="sb-icon">✨</span> 策展 · Awesome</div>
+        <span class="sb-badge">6</span>
+      </div>
+      <div class="sb-item" onclick="setType('package',this)">
+        <div class="sb-item-left"><span class="sb-icon">📦</span> 包管理 · 依赖</div>
+        <span class="sb-badge">6</span>
+      </div>
+      <div class="sb-item" onclick="setType('search',this)">
+        <div class="sb-item-left"><span class="sb-icon">🔍</span> 代码搜索</div>
+        <span class="sb-badge">4</span>
+      </div>
+      <div class="sb-item" onclick="setType('analytics',this)">
+        <div class="sb-item-left"><span class="sb-icon">📊</span> 数据分析</div>
+        <span class="sb-badge">3</span>
+      </div>
+      <div class="sb-item" onclick="setType('alternative',this)">
+        <div class="sb-item-left"><span class="sb-icon">🔄</span> 替代方案</div>
+        <span class="sb-badge">2</span>
+      </div>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-section">
+      <div class="sb-label">快速场景</div>
+      <div class="sb-item" onclick="goWorkflow(0)"><div class="sb-item-left"><span class="sb-icon">💡</span> 发现新项目</div></div>
+      <div class="sb-item" onclick="goWorkflow(1)"><div class="sb-item-left"><span class="sb-icon">🎯</span> 评估项目质量</div></div>
+      <div class="sb-item" onclick="goWorkflow(2)"><div class="sb-item-left"><span class="sb-icon">🔬</span> 深入代码搜索</div></div>
+      <div class="sb-item" onclick="goWorkflow(3)"><div class="sb-item-left"><span class="sb-icon">📦</span> 寻找语言包</div></div>
+      <div class="sb-item" onclick="goWorkflow(4)"><div class="sb-item-left"><span class="sb-icon">🔄</span> 寻找开源替代</div></div>
+      <div class="sb-item" onclick="goWorkflow(5)"><div class="sb-item-left"><span class="sb-icon">🌏</span> 中文资源专区</div></div>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-section">
+      <div class="sb-label">AI 功能</div>
+      <div class="sb-item" onclick="triggerAiRec()"><div class="sb-item-left"><span class="sb-icon">🤖</span> AI 智能推荐</div></div>
+      <div class="sb-item" onclick="triggerAiInsight()"><div class="sb-item-left"><span class="sb-icon">💎</span> 深度洞见</div></div>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content-area">
+
+    <!-- ① DISCOVER TAB -->
+    <div class="tab-panel active" id="tab-discover">
+      <div class="ai-insight" id="aiInsight">
+        <div class="ai-insight-label">
+          <div class="ai-spin" id="aiSpin"></div>
+          ✦ AI 分析
+        </div>
+        <div class="ai-text" id="aiTextContent"></div>
+      </div>
+      <div class="panel-head">
+        <div>
+          <div class="panel-title" id="discoverTitle">全部平台 · 34 个</div>
+          <div class="panel-sub">点击卡片查看详情 · ★ 收藏 · 直接跳转访问</div>
+        </div>
+        <div class="panel-tools">
+          <button class="icon-btn active" id="gridBtn" onclick="setDisplayMode('grid',this)">⊞ 卡片</button>
+          <button class="icon-btn" id="listBtn" onclick="setDisplayMode('list',this)">☰ 列表</button>
+        </div>
+      </div>
+      <div class="tools-grid" id="toolsGrid"></div>
+    </div>
+
+    <!-- ② WORKFLOW TAB -->
+    <div class="tab-panel" id="tab-workflow">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">工作流向导</div>
+          <div class="panel-sub">按你当前的任务，选择最合适的平台组合方案</div>
+        </div>
+      </div>
+      <div class="workflow-panel">
+        <div class="wf-steps" id="wfSteps"></div>
+        <div id="wfDetails"></div>
+      </div>
+    </div>
+
+    <!-- ③ COMPARE TAB -->
+    <div class="tab-panel" id="tab-compare">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">功能对比矩阵</div>
+          <div class="panel-sub">34 个平台横向比较 8 项核心维度 · 一目了然</div>
+        </div>
+      </div>
+      <div class="compare-wrap">
+        <table class="compare-table" id="compareTable"></table>
+      </div>
+    </div>
+
+    <!-- ④ FAVOURITES TAB -->
+    <div class="tab-panel" id="tab-favourites">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">我的收藏</div>
+          <div class="panel-sub">收藏的平台 · 可添加个人备注 · 本地持久化存储</div>
+        </div>
+        <div class="panel-tools">
+          <button class="icon-btn" onclick="clearFavs()">清空收藏</button>
+        </div>
+      </div>
+      <div id="favsContainer"></div>
+    </div>
+
+  </main>
+</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-brand">Git<em style="font-style:italic;color:var(--gold)">Universe</em> v2</div>
+      <div class="footer-note">聚合 34 个平台 · 本地运行 · 零依赖 · 数据来自各平台公开信息</div>
+    </div>
+    <div class="footer-note">AI 分析由 Claude 提供 · 收藏数据存于本地 localStorage</div>
+  </div>
+</footer>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="closeModalOut(event)">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-head">
+      <div>
+        <div class="modal-name" id="mName"></div>
+        <div class="modal-url" id="mUrl"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+<script>
+/* ══════════════════════════════════════════
+   DATA — 34 TOOLS (complete)
+══════════════════════════════════════════ */
+const TOOLS = [
+  {
+    id:'github-explore', name:'GitHub Explore', icon:'🌐',
+    url:'https://github.com/explore', type:'discovery', score:88,
+    desc:'GitHub 官方发现入口，含 Trending、Topics、Collections，是最权威的资源发现渠道。每日更新全球热门项目。',
+    pros:['官方数据最权威','Topics 标签体系完善','每日/周/月趋势可选'],
+    cons:['个性化推荐能力弱','无深度过滤条件','界面信息密度偏低'],
+    tags:['官方','Trending','Topics','免费'],
+    scenarios:['想看今天全球最火的项目','按编程语言浏览趋势'],
+    combos:['github-explore + ossinsight = 发现+深度分析','github-explore + star-history = 趋势确认'],
+    features:{search:true, rank:true, curated:true, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'github-topics', name:'GitHub Topics', icon:'🏷️',
+    url:'https://github.com/topics', type:'discovery', score:85,
+    desc:'GitHub 官方 Topic 标签浏览系统，直接按领域过滤所有打了该标签的仓库，结合星数排序效果极好。',
+    pros:['直接按领域浏览','标签生态非常丰富','结合星数排序'],
+    cons:['依赖仓库自行打标签','分类粒度不均','无自定义订阅'],
+    tags:['标签','分类','官方'],
+    scenarios:['寻找特定技术领域的所有库','按 topic:path-planning 精准过滤'],
+    combos:['github-topics + sourcegraph = 标签发现+代码验证'],
+    features:{search:true, rank:true, curated:false, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'gitstar-ranking', name:'GitStar Ranking', icon:'⭐',
+    url:'https://gitstar-ranking.com', type:'ranking', score:78,
+    desc:'按 GitHub Stars 数排名的仓库/用户/组织榜单，直观展示最受欢迎的开源资源。',
+    pros:['榜单结构清晰直观','用户/组织/仓库三维','历史数据可追溯'],
+    cons:['仅按星数排名，偏颇','无内容深度描述','更新频率不稳定'],
+    tags:['Star 排行','榜单','热度'],
+    scenarios:['查看全球 Star 最多的仓库','了解顶级开发者/组织'],
+    combos:['gitstar-ranking + ossinsight = 排名+多维分析'],
+    features:{search:false, rank:true, curated:false, api:false, free:true, cn:false, mobile:true, offline:false}
+  },
+  {
+    id:'ossinsight', name:'OSS Insight', icon:'📊',
+    url:'https://ossinsight.io', type:'analytics', score:93,
+    desc:'PingCAP 出品，基于 GitHub 全量事件数据的深度分析平台。可对比项目增长曲线、开发者活跃度、Contributor 分布。',
+    pros:['数据覆盖最全面','可视化图表专业','支持自定义 SQL 查询'],
+    cons:['对新手有学习门槛','页面加载较慢','中文支持有限'],
+    tags:['数据分析','可视化','对比','GitHub 全量'],
+    scenarios:['对比两个竞品项目的成长轨迹','分析某项目的 Contributor 来自哪些国家'],
+    combos:['ossinsight + star-history = 全面健康度评估'],
+    features:{search:true, rank:true, curated:false, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'libraries-io', name:'Libraries.io', icon:'📚',
+    url:'https://libraries.io', type:'package', score:86,
+    desc:'跨平台开源库索引，覆盖 npm、PyPI、Maven 等 32 个包管理器平台，可追踪依赖关系和订阅更新。',
+    pros:['覆盖 32 个包管理器','依赖关系完整追踪','可订阅仓库更新'],
+    cons:['UI 设计较老旧','搜索相关性一般','无中文界面'],
+    tags:['包管理','依赖','跨平台','订阅'],
+    scenarios:['同一个库在 npm/pip/maven 的状态','追踪某个库的所有下游依赖'],
+    combos:['libraries.io + deps.dev = 依赖+安全双重检查'],
+    features:{search:true, rank:true, curated:false, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'awesome-lists', name:'Awesome Lists', icon:'✨',
+    url:'https://github.com/sindresorhus/awesome', type:'curated', score:95,
+    desc:'最著名的 GitHub 策展元仓库，由社区维护数百个领域的精选资源列表，质量极高，是学习某领域的最佳起点。',
+    pros:['社区维护质量高','覆盖领域极广','每个列表深度充足'],
+    cons:['更新频率各列表不一','无统一搜索界面','需在多个仓库间跳转'],
+    tags:['策展','社区','精选','学习'],
+    scenarios:['想系统了解某个新技术领域','寻找某语言的最佳工具集合'],
+    combos:['awesome-lists + awesomelists.top = 内容+搜索'],
+    features:{search:false, rank:false, curated:true, api:false, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'awesomelists-top', name:'awesomelists.top', icon:'🗂️',
+    url:'https://awesomelists.top', type:'curated', score:82,
+    desc:'为 Awesome 系列提供统一搜索界面，解决了在数百个 Awesome 仓库间跳转的痛点。',
+    pros:['Awesome 系列统一搜索','界面简洁快速','精准定位目标列表'],
+    cons:['仅覆盖 Awesome 系列','数据同步有延迟','功能比较单一'],
+    tags:['Awesome','搜索','聚合'],
+    scenarios:['快速定位哪个 Awesome 列表最相关','不确定 Awesome-xxx 完整名称时搜索'],
+    combos:['awesomelists.top + github-topics = 快速找到精选列表'],
+    features:{search:true, rank:false, curated:true, api:false, free:true, cn:false, mobile:true, offline:false}
+  },
+  {
+    id:'opensourcealternative', name:'OpenSourceAlternative.to', icon:'🔄',
+    url:'https://www.opensourcealternative.to', type:'alternative', score:83,
+    desc:'按商业软件查找开源替代品，覆盖数千个商业工具的开源等价物，需求驱动，实用性极强。',
+    pros:['需求驱动，实用性强','覆盖工具种类丰富','可按功能类别浏览'],
+    cons:['仅适用于替代品场景','质量评估较主观','更新依赖社区贡献'],
+    tags:['替代品','开源','工具对比'],
+    scenarios:['找 Notion 的开源替代品','找 Figma 的自托管替代'],
+    combos:['opensourcealternative + awesome-selfhosted = 替代品+部署方案'],
+    features:{search:true, rank:false, curated:true, api:false, free:true, cn:false, mobile:true, offline:false}
+  },
+  {
+    id:'alternativeto', name:'AlternativeTo', icon:'↔️',
+    url:'https://alternativeto.net', type:'alternative', score:80,
+    desc:'更广泛的软件替代品搜索平台，不限于开源，但开源过滤功能完善，用户评价体系成熟。',
+    pros:['用户量大数据丰富','支持平台/许可证过滤','评价体系完整'],
+    cons:['非专注开源','商业软件结果混杂','质量参差不齐'],
+    tags:['替代品','软件','用户评价'],
+    scenarios:['寻找某软件的开源替代并看用户评价','对比多个替代品的用户口碑'],
+    combos:['alternativeto + stackshare = 替代品选择+实际使用案例'],
+    features:{search:true, rank:true, curated:false, api:false, free:true, cn:false, mobile:true, offline:false}
+  },
+  {
+    id:'npm', name:'npm Registry', icon:'📦',
+    url:'https://www.npmjs.com', type:'package', score:90,
+    desc:'JavaScript/Node.js 最大包管理平台，月下载量数据是评估 JS 库流行度的最直接指标。',
+    pros:['JS 生态覆盖最全','下载量趋势直观','集成 GitHub 仓库链接'],
+    cons:['仅限 JS/TS 生态','包质量差异极大','搜索相关性一般'],
+    tags:['JavaScript','TypeScript','Node.js','包管理'],
+    scenarios:['查找某 JS 功能的最流行实现','对比两个 npm 包的下载量趋势'],
+    combos:['npm + bestofjs = 找包+质量验证'],
+    features:{search:true, rank:true, curated:false, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'pypi', name:'PyPI', icon:'🐍',
+    url:'https://pypi.org', type:'package', score:88,
+    desc:'Python 官方包索引，寻找 Python 库的权威来源，版本历史和依赖信息完整。',
+    pros:['Python 生态官方权威','版本历史完整','与 pip 无缝集成'],
+    cons:['仅限 Python 生态','搜索体验较平淡','无依赖图可视化'],
+    tags:['Python','pip','官方'],
+    scenarios:['查找 Python 几何计算库','确认某 Python 包的最新稳定版本'],
+    combos:['pypi + libraries.io = 找包+依赖分析'],
+    features:{search:true, rank:false, curated:false, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'sourcegraph', name:'Sourcegraph', icon:'🔎',
+    url:'https://sourcegraph.com', type:'search', score:93,
+    desc:'专业代码搜索引擎，支持正则、结构化搜索，可跨仓库搜索代码片段，是开发者级代码探索神器。',
+    pros:['正则/结构化代码搜索','跨仓库搜索能力','集成 AI 助手 Cody'],
+    cons:['免费版有限制','学习曲线较陡','响应速度时有波动'],
+    tags:['代码搜索','正则','跨仓库','AI 辅助'],
+    scenarios:['找某 API 在真实项目中的使用示例','搜索某函数签名在哪些项目里出现'],
+    combos:['sourcegraph + grep.app = 深度搜索+快速扫描'],
+    features:{search:true, rank:false, curated:false, api:true, free:false, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'grep-app', name:'grep.app', icon:'🔬',
+    url:'https://grep.app', type:'search', score:85,
+    desc:'极简代码搜索工具，在 50 万个 GitHub 仓库中快速 grep，响应速度极快，支持正则表达式。',
+    pros:['搜索速度极快','界面极简零干扰','支持正则表达式'],
+    cons:['覆盖仓库有限','无过滤条件','功能比较单一'],
+    tags:['代码搜索','grep','快速','正则'],
+    scenarios:['快速确认某代码模式在 GitHub 上的用法','验证某 API 调用方式是否正确'],
+    combos:['grep.app + github-codesearch = 快速扫描+精准过滤'],
+    features:{search:true, rank:false, curated:false, api:false, free:true, cn:false, mobile:true, offline:false}
+  },
+  {
+    id:'searchcode', name:'Searchcode', icon:'🧐',
+    url:'https://searchcode.com', type:'search', score:82,
+    desc:'跨托管平台代码搜索，覆盖 GitHub、GitLab、Bitbucket 及私有平台，共索引 750 亿行代码。',
+    pros:['跨平台搜索覆盖广','代码索引量巨大','支持多语言过滤'],
+    cons:['UI 比较老旧','相关性排序一般','无项目质量指标'],
+    tags:['代码搜索','跨平台','750亿行'],
+    scenarios:['搜索 GitHub+GitLab 双平台代码','寻找特定算法的多语言实现'],
+    combos:['searchcode + sourcegraph = 广度+深度互补'],
+    features:{search:true, rank:false, curated:false, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'github-codesearch', name:'GitHub Code Search', icon:'🔭',
+    url:'https://cs.github.com', type:'search', score:90,
+    desc:'GitHub 官方新一代代码搜索，支持 lang:、path:、repo: 等精确语法，速度和质量大幅提升。',
+    pros:['官方数据最完整','语法丰富且精准','搜索速度很快'],
+    cons:['需要登录 GitHub','高级语法需学习','调用有频率限制'],
+    tags:['代码搜索','官方','精确语法'],
+    scenarios:['搜索某语言中使用特定模式的代码','在指定仓库内精确搜索'],
+    combos:['github-codesearch + sourcegraph = 官方数据+AI辅助'],
+    features:{search:true, rank:false, curated:false, api:true, free:false, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'star-history', name:'Star History', icon:'📈',
+    url:'https://star-history.com', type:'analytics', score:87,
+    desc:'可视化 GitHub 仓库 Star 数增长曲线，多项目对比，判断项目活跃度和社区增长趋势。',
+    pros:['Star 趋势图直观清晰','多项目同屏对比','免费且无需登录'],
+    cons:['仅 Star 单一指标','无其他质量维度','API 有限速'],
+    tags:['Star 趋势','可视化','对比','免费'],
+    scenarios:['对比 React vs Vue vs Svelte 的 Star 增长','判断某项目是否仍在活跃增长'],
+    combos:['star-history + ossinsight = Star趋势+全维度分析'],
+    features:{search:false, rank:true, curated:false, api:true, free:true, cn:false, mobile:true, offline:false}
+  },
+  {
+    id:'repotrends', name:'Repo Trends', icon:'📉',
+    url:'https://repotrends.com', type:'analytics', score:79,
+    desc:'多维度分析 GitHub 项目健康度趋势工具，包含 Fork、Issue、PR 等指标，比单纯看 Star 更全面。',
+    pros:['多维度健康度指标','图表形式丰富','可追踪竞品动态'],
+    cons:['数据更新有延迟','免费功能有限制','英文界面'],
+    tags:['项目健康度','趋势','多维度'],
+    scenarios:['判断某项目 Issue 处理是否及时','评估项目是否有足够活跃的贡献者'],
+    combos:['repotrends + ossinsight = 健康度+深度数据'],
+    features:{search:false, rank:true, curated:false, api:false, free:false, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'trending-github', name:'Trending.github.io', icon:'🔥',
+    url:'https://trending.github.io', type:'ranking', score:75,
+    desc:'第三方 GitHub Trending 聚合，支持按语言和时间段过滤，界面比官方更简洁，加载快。',
+    pros:['界面简洁清晰','语言过滤非常完善','加载速度极快'],
+    cons:['数据依赖爬取','功能比较单一','无深度项目信息'],
+    tags:['Trending','语言过滤','简洁快速'],
+    scenarios:['只想快速看某语言今天的热门项目','官方 Trending 加载慢时的替代'],
+    combos:['trending.github.io + star-history = 发现+趋势验证'],
+    features:{search:false, rank:true, curated:false, api:false, free:true, cn:false, mobile:true, offline:false}
+  },
+  {
+    id:'hellogithub', name:'HelloGitHub', icon:'👋',
+    url:'https://hellogithub.com', type:'curated', score:89,
+    desc:'中文社区精选 GitHub 有趣开源项目月刊，专注趣味性和实用性，对中文开发者极其友好，已坚持多年。',
+    pros:['中文友好无门槛','趣味+实用双属性','月刊形式持续稳定'],
+    cons:['偏重有趣项目','严肃工程库较少','更新依赖志愿者'],
+    tags:['中文','精选','月刊','趣味'],
+    scenarios:['中文开发者发现有意思的开源项目','寻找适合学习的中文友好项目'],
+    combos:['hellogithub + gitee-explore = 中文资源完整覆盖'],
+    features:{search:true, rank:true, curated:true, api:false, free:true, cn:true, mobile:true, offline:false}
+  },
+  {
+    id:'gitcode', name:'GitCode', icon:'🇨🇳',
+    url:'https://gitcode.com', type:'discovery', score:74,
+    desc:'CSDN 旗下代码托管，镜像大量 GitHub 项目并提供中文社区讨论，适合网络不稳定时的国内访问。',
+    pros:['国内访问流畅稳定','中文内容丰富','镜像大量开源项目'],
+    cons:['内容质量参差不齐','与 GitHub 内容重复','商业化较重'],
+    tags:['国内','中文','镜像','CSDN'],
+    scenarios:['GitHub 访问不稳定时的备选','寻找中文技术讨论和文档'],
+    combos:['gitcode + gitee = 国内双平台覆盖'],
+    features:{search:true, rank:true, curated:false, api:false, free:true, cn:true, mobile:true, offline:false}
+  },
+  {
+    id:'gitee-explore', name:'Gitee 码云 Explore', icon:'🔴',
+    url:'https://gitee.com/explore', type:'discovery', score:76,
+    desc:'国内最大代码托管平台的发现入口，优质项目推荐，大量国内原创项目在此首发，企业用户多。',
+    pros:['国内访问极快','中文社区活跃','国内原创项目多'],
+    cons:['主要是国内项目','国际开源覆盖少','推荐算法待提升'],
+    tags:['国内','中文','企业','原创'],
+    scenarios:['寻找国内开发者的原创开源项目','企业选型时查看国产替代方案'],
+    combos:['gitee + hellogithub = 国内开源全覆盖'],
+    features:{search:true, rank:true, curated:true, api:true, free:true, cn:true, mobile:true, offline:false}
+  },
+  {
+    id:'gitlab-explore', name:'GitLab Explore', icon:'🦊',
+    url:'https://gitlab.com/explore', type:'discovery', score:80,
+    desc:'GitLab 平台项目发现入口，包含许多仅在 GitLab 托管的重要开源项目，尤其是 DevOps 和基础设施领域。',
+    pros:['GitLab 独有项目','CI/CD 集成项目多','企业级开源项目丰富'],
+    cons:['用户基数小于 GitHub','搜索体验一般','生态相对封闭'],
+    tags:['GitLab','DevOps','企业级'],
+    scenarios:['寻找 DevOps 工具链相关项目','查找 GitLab 平台上的基础设施项目'],
+    combos:['gitlab-explore + github-explore = 跨平台发现'],
+    features:{search:true, rank:true, curated:false, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'maven-central', name:'Maven Central', icon:'☕',
+    url:'https://central.sonatype.com', type:'package', score:85,
+    desc:'Java/JVM 生态最权威的包索引，Kotlin、Scala、Groovy 等 JVM 语言库均在此发布。',
+    pros:['JVM 生态最权威','稳定性极强','版本历史完整'],
+    cons:['仅限 JVM 生态','界面传统老旧','搜索体验一般'],
+    tags:['Java','Kotlin','Maven','JVM'],
+    scenarios:['查找 Java 几何算法库的最新版本','确认某 Maven 依赖的可用版本列表'],
+    combos:['maven-central + libraries.io = 找包+依赖追踪'],
+    features:{search:true, rank:false, curated:false, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'crates-io', name:'crates.io', icon:'🦀',
+    url:'https://crates.io', type:'package', score:88,
+    desc:'Rust 官方包仓库，Rust 生态的一站式库索引，下载量统计详细，文档链接完善。',
+    pros:['Rust 生态官方权威','依赖图清晰完整','与 docs.rs 无缝集成'],
+    cons:['仅限 Rust 生态','部分库文档缺失','国内下载速度慢'],
+    tags:['Rust','Cargo','官方'],
+    scenarios:['寻找 Rust 几何计算库','查看某 Rust crate 的依赖树'],
+    combos:['crates.io + sourcegraph = 找包+代码示例'],
+    features:{search:true, rank:true, curated:false, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'repology', name:'Repology', icon:'🗃️',
+    url:'https://repology.org', type:'package', score:83,
+    desc:'跨包管理器版本追踪工具，监控同一项目在 brew、apt、dnf、pip 等数百个仓库中的版本一致性。',
+    pros:['跨包管理器覆盖最全','版本一致性一眼可见','支持数百个仓库'],
+    cons:['界面极简陋','无项目描述信息','使用场景较窄'],
+    tags:['跨包管理','版本追踪','运维','Linux'],
+    scenarios:['确认某工具在各 Linux 发行版中的版本','检查项目是否已被主流包管理器收录'],
+    combos:['repology + libraries.io = 版本追踪+依赖分析'],
+    features:{search:true, rank:false, curated:false, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'stackshare', name:'StackShare', icon:'🛠️',
+    url:'https://stackshare.io', type:'community', score:84,
+    desc:'技术栈分享社区，可查看知名公司/项目使用的技术组合，发现同类项目广泛采用的工具选型。',
+    pros:['实际使用案例丰富','技术栈搭配参考价值高','公司技术选型透明'],
+    cons:['以商业公司为主','更新依赖用户贡献','开源项目覆盖有限'],
+    tags:['技术栈','选型','社区','公司'],
+    scenarios:['选型时了解行业主流方案','了解某技术组合的真实落地案例'],
+    combos:['stackshare + bestofjs = 选型决策+社区验证'],
+    features:{search:true, rank:true, curated:false, api:false, free:false, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'producthunt-oss', name:'Product Hunt · Open Source', icon:'🐱',
+    url:'https://www.producthunt.com/topics/open-source', type:'discovery', score:78,
+    desc:'Product Hunt 开源专区，常有新颖的开源工具首发亮相，发现早期有潜力的新工具效果极好。',
+    pros:['新工具首发聚集地','社区投票自然筛选','热度讨论活跃'],
+    cons:['偏向产品而非库','质量筛选机制较弱','非技术向内容混杂'],
+    tags:['新工具','首发','社区投票'],
+    scenarios:['想第一时间发现刚推出的有潜力工具','寻找某领域近期新出现的开源产品'],
+    combos:['producthunt + devhunt = 产品+开发者工具双渠道'],
+    features:{search:true, rank:true, curated:false, api:false, free:true, cn:false, mobile:true, offline:false}
+  },
+  {
+    id:'devhunt', name:'DevHunt', icon:'🎯',
+    url:'https://devhunt.org', type:'discovery', score:76,
+    desc:'专注开发者工具的 Product Hunt 替代品，所有上架工具均服务于开发者，信噪比更高，社区氛围好。',
+    pros:['纯开发者工具定位','信噪比高','社区氛围友好'],
+    cons:['平台体量较小','知名度有限','发现新工具需耐心'],
+    tags:['开发者工具','新工具','发现'],
+    scenarios:['寻找刚发布的开发者工具','了解开发者社区最近在用什么新工具'],
+    combos:['devhunt + producthunt = 覆盖更广的新工具发现'],
+    features:{search:true, rank:true, curated:false, api:false, free:true, cn:false, mobile:true, offline:false}
+  },
+  {
+    id:'awesome-selfhosted', name:'Awesome Selfhosted', icon:'🏠',
+    url:'https://github.com/awesome-selfhosted/awesome-selfhosted', type:'curated', score:91,
+    desc:'自托管软件最权威的策展列表，数千个可私有部署的开源应用，分类精细，社区维护极为活跃。',
+    pros:['自托管领域覆盖最全','分类精细易找到目标','维护非常活跃'],
+    cons:['仅限自托管部署场景','无统一搜索界面','需阅读 Markdown'],
+    tags:['自托管','私有部署','策展','DevOps'],
+    scenarios:['寻找 Notion/Jira 等工具的自托管替代品','组建完整的私有化办公套件'],
+    combos:['awesome-selfhosted + opensourcealternative = 自托管替代完整方案'],
+    features:{search:false, rank:false, curated:true, api:false, free:true, cn:false, mobile:false, offline:true}
+  },
+  {
+    id:'github-collections', name:'GitHub Collections', icon:'🗝️',
+    url:'https://github.com/collections', type:'curated', score:81,
+    desc:'GitHub 官方策划的主题合集，由 GitHub 团队人工整理，权威性强，适合初学者快速了解某个生态。',
+    pros:['官方权威策划质量高','主题合集组织清晰','与 GitHub 完全集成'],
+    cons:['合集数量有限','更新较为缓慢','覆盖面相对较窄'],
+    tags:['官方','策划','主题合集'],
+    scenarios:['初学者快速了解某技术方向的核心工具','了解 GitHub 官方推荐的生产级项目'],
+    combos:['github-collections + awesome-lists = 官方+社区双重策划'],
+    features:{search:false, rank:false, curated:true, api:false, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'bestofjs', name:'Best of JS', icon:'🌟',
+    url:'https://bestofjs.org', type:'ranking', score:90,
+    desc:'JavaScript 生态精选项目排行，按月 Star 增量而非总量排名，有效过滤 JS 生态噪音，质量极高。',
+    pros:['月增量排名更公平','JS 生态专注深度好','分类体系详细完整'],
+    cons:['仅限 JavaScript 生态','数据更新有一定延迟','无其他语言'],
+    tags:['JavaScript','排行','精选','月增量'],
+    scenarios:['寻找 JS 生态近期新兴的优质库','对比同类 JS 库的真实增长速度'],
+    combos:['bestofjs + npm = 发现+下载量双验证'],
+    features:{search:true, rank:true, curated:true, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'deps-dev', name:'deps.dev (Google)', icon:'🕸️',
+    url:'https://deps.dev', type:'package', score:87,
+    desc:'Google 出品的开源依赖洞察工具，查询任意包的依赖树、已知漏洞、许可证合规情况，安全感满满。',
+    pros:['Google 出品数据权威','集成漏洞扫描','许可证合规检查完善'],
+    cons:['功能偏安全/合规','发现新库能力弱','界面较为专业'],
+    tags:['依赖安全','漏洞','许可证','Google'],
+    scenarios:['在引入某开源库前检查安全漏洞','确认某库的许可证是否与项目兼容'],
+    combos:['deps.dev + libraries.io = 安全+依赖完整评估'],
+    features:{search:true, rank:false, curated:false, api:true, free:true, cn:false, mobile:false, offline:false}
+  },
+  {
+    id:'gittrends', name:'GitTrends (Mobile)', icon:'🌊',
+    url:'https://www.gittrends.app', type:'ranking', score:77,
+    desc:'移动端优先的 GitHub 趋势追踪应用，支持 iOS/Android，随时随地查看开发者和项目动态，推送通知。',
+    pros:['移动端体验最好','支持推送通知','轻量快速流畅'],
+    cons:['功能比较简单','不适合深度分析','数据源较单一'],
+    tags:['移动端','iOS','Android','推送'],
+    scenarios:['在手机上快速查看今日 GitHub 趋势','订阅关注项目的更新通知'],
+    combos:['gittrends + star-history = 移动发现+桌面深度分析'],
+    features:{search:false, rank:true, curated:false, api:false, free:true, cn:false, mobile:true, offline:false}
+  },
+  {
+    id:'open-sustainable', name:'Open Sustainable Tech', icon:'🌱',
+    url:'https://opensustain.tech', type:'curated', score:79,
+    desc:'专注可持续发展/气候技术方向的开源项目索引，垂直领域策展的优质范例，理念鲜明项目质量高。',
+    pros:['垂直领域深度极好','项目质量整体较高','理念清晰易找方向'],
+    cons:['领域极度垂直','覆盖面非常窄','更新频率一般'],
+    tags:['可持续','气候','垂直领域','ESG'],
+    scenarios:['寻找气候科技/环境数据相关的开源工具','了解可持续发展方向的开源生态'],
+    combos:['open-sustainable + awesome-lists = 垂直深度+广度补充'],
+    features:{search:true, rank:false, curated:true, api:false, free:true, cn:false, mobile:false, offline:false}
+  },
+];
+
+/* ══════════════════════════════════════════
+   WORKFLOW SCENARIOS
+══════════════════════════════════════════ */
+const WORKFLOWS = [
+  {
+    icon:'💡', name:'发现新项目',
+    desc:'不知道从哪里找，想探索当前热门或某领域的优质项目',
+    intro:'当你想寻找新项目或新工具时，最佳路径是从宽到窄——先用趋势/策展平台建立全局视野，再深入目标领域，最后用数据工具验证质量。',
+    combos:[
+      {
+        name:'快速发现路线', badge:'推荐',
+        tools:['github-explore','github-topics','awesome-lists'],
+        desc:'官方 Trending → 领域 Topic 过滤 → Awesome 精选列表三步走，适合快速探索陌生领域。'
+      },
+      {
+        name:'深度发现路线', badge:'全面',
+        tools:['hellogithub','bestofjs','ossinsight'],
+        desc:'中文友好起点 → JS 精选或目标语言排行 → 多维数据验证，适合需要做技术选型决策的场景。'
+      },
+      {
+        name:'新工具雷达', badge:'前沿',
+        tools:['producthunt-oss','devhunt','trending-github'],
+        desc:'Product Hunt 开源首发 → DevHunt 开发者工具 → Trending 验证热度，适合追踪最新涌现的工具。'
+      }
+    ],
+    tips:['先在 GitHub Topics 里搜索领域关键词，找到相关 Topic 后按 Star 数排序效果最好','Awesome 列表通常是进入某领域最快的学习地图','HelloGitHub 的每期月刊适合每月花 10 分钟快速扫描']
+  },
+  {
+    icon:'🎯', name:'评估项目质量',
+    desc:'找到了候选项目，需要判断它是否活跃、是否值得使用',
+    intro:'找到项目只是第一步，评估其质量才是关键。好的项目需要活跃的维护、健康的社区、清晰的版本迭代。单靠 Star 数判断非常不可靠。',
+    combos:[
+      {
+        name:'活跃度评估', badge:'推荐',
+        tools:['star-history','ossinsight','repotrends'],
+        desc:'Star 增长曲线 → 多维度事件分析 → Commit/Issue/PR 健康度，综合判断项目是否仍在积极维护。'
+      },
+      {
+        name:'安全与合规', badge:'重要',
+        tools:['deps-dev','libraries-io','repology'],
+        desc:'Google 漏洞数据库 → 依赖关系全图 → 各包管理器版本状态，确保引入的库安全合规。'
+      }
+    ],
+    tips:['Star 增长突然断崖式停止，通常意味着项目已停止维护','OSS Insight 的 Contributor 地域分布图可以判断项目的社区多样性','deps.dev 的漏洞扫描在引入新依赖前必查']
+  },
+  {
+    icon:'🔬', name:'深入代码搜索',
+    desc:'需要找某个 API 的用法示例，或验证某种实现方式',
+    intro:'有时候文档不够清晰，最好的方法是直接在真实项目代码中搜索用法。代码搜索工具能让你快速找到大量实际示例。',
+    combos:[
+      {
+        name:'快速代码验证', badge:'推荐',
+        tools:['grep-app','github-codesearch'],
+        desc:'grep.app 秒速扫描 → GitHub Code Search 精确语法过滤，快速找到 API 使用示例。'
+      },
+      {
+        name:'深度代码探索', badge:'全面',
+        tools:['sourcegraph','searchcode','github-codesearch'],
+        desc:'Sourcegraph 结构化搜索 + AI 辅助 → Searchcode 跨平台覆盖 → GitHub 官方数据，全面无死角。'
+      }
+    ],
+    tips:['grep.app 支持正则，搜索 `import.*shapely` 可找到所有 shapely 的导入用法','Sourcegraph 的 `lang:python` 过滤极大提高精准度','GitHub Code Search 的 `path:*.test.js` 可以专门找测试用例']
+  },
+  {
+    icon:'📦', name:'寻找语言包',
+    desc:'针对特定编程语言，寻找解决特定问题的最佳库',
+    intro:'每种语言都有自己最权威的包索引，配合排行和搜索工具，可以快速找到质量可靠的库并评估选择。',
+    combos:[
+      {
+        name:'Python 全流程', badge:'Python',
+        tools:['pypi','libraries-io','deps-dev'],
+        desc:'PyPI 查版本 → Libraries.io 看依赖关系 → deps.dev 检查安全，Python 开发者标准工作流。'
+      },
+      {
+        name:'JavaScript 全流程', badge:'JS/TS',
+        tools:['npm','bestofjs','deps-dev'],
+        desc:'npm 看下载量 → Best of JS 验证质量排名 → deps.dev 检查漏洞，前端开发者标准工作流。'
+      },
+      {
+        name:'Rust / Java 专项', badge:'系统语言',
+        tools:['crates-io','maven-central','repology'],
+        desc:'crates.io(Rust) / Maven Central(Java) 找包 → Repology 确认各平台版本状态。'
+      }
+    ],
+    tips:['npm 的周下载量是评估 JS 库流行度最直接的指标，但要注意排除 CI 机器人下载','PyPI 搜索结果要结合 GitHub Stars 和最后更新时间综合判断','crates.io 的 recent downloads 比 all-time 更能反映当前社区热度']
+  },
+  {
+    icon:'🔄', name:'寻找开源替代',
+    desc:'正在使用某商业软件，想找开源替代品或自托管方案',
+    intro:'开源替代品有两类需求：一是功能对等的开源工具，二是可以自己部署的私有化方案。两者有不同的最佳工具组合。',
+    combos:[
+      {
+        name:'功能对等替代', badge:'推荐',
+        tools:['opensourcealternative','alternativeto','stackshare'],
+        desc:'OpenSourceAlternative 精准开源替代 → AlternativeTo 用户评价参考 → StackShare 看真实使用案例。'
+      },
+      {
+        name:'自托管方案', badge:'私有化',
+        tools:['awesome-selfhosted','opensourcealternative'],
+        desc:'Awesome Selfhosted 找到自托管选项 → OpenSourceAlternative 确认功能完整性，适合要求数据私有的场景。'
+      }
+    ],
+    tips:['OpenSourceAlternative.to 直接用商业软件名搜索，如"Notion alternative"效果最好','Awesome Selfhosted 有非常完善的分类，找自托管选项时先浏览分类再搜索','StackShare 可以看到具体公司从商业工具迁移到开源工具的案例']
+  },
+  {
+    icon:'🌏', name:'中文资源专区',
+    desc:'中文开发者，希望找到中文友好或国内开发者创建的开源项目',
+    intro:'国内开发者社区创造了大量优质开源项目，且有丰富的中文技术文档。使用针对中文生态的平台可以大幅降低语言门槛。',
+    combos:[
+      {
+        name:'中文发现路线', badge:'中文优先',
+        tools:['hellogithub','gitee-explore','gitcode'],
+        desc:'HelloGitHub 趣味精选 → Gitee 发现国内原创 → GitCode 镜像补充，中文开发者完整资源路线。'
+      },
+      {
+        name:'中文+全球结合', badge:'双语',
+        tools:['hellogithub','github-explore','github-topics'],
+        desc:'从中文友好平台建立信心和基础知识 → 再进入 GitHub 全球生态做深度搜索，克服语言障碍。'
+      }
+    ],
+    tips:['HelloGitHub 每月月刊是中文开发者了解全球优质开源项目性价比最高的方式','Gitee 的"最有价值开源项目"评选每年产出一批高质量的国内原创项目','遇到 GitHub 访问不稳定时，GitCode 镜像是快速查阅源码的好备选']
+  }
+];
+
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+let state = {
+  typeFilter: 'all',
+  searchQuery: '',
+  searchMode: 'filter',
+  displayMode: 'grid',
+  activeTab: 'discover',
+  wfActive: 0,
+  favs: {}  // id -> { note }
+};
+
+/* ══════════════════════════════════════════
+   LOCAL STORAGE
+══════════════════════════════════════════ */
+function loadFavs() {
+  try {
+    const raw = localStorage.getItem('gu_favs_v2');
+    if (raw) state.favs = JSON.parse(raw);
+  } catch(e) { state.favs = {}; }
+}
+function saveFavs() {
+  try { localStorage.setItem('gu_favs_v2', JSON.stringify(state.favs)); }
+  catch(e) {}
+}
+function toggleFav(id) {
+  if (state.favs[id]) { delete state.favs[id]; }
+  else { state.favs[id] = { note: '' }; }
+  saveFavs();
+  updateFavCount();
+  renderCards();
+  if (state.activeTab === 'favourites') renderFavs();
+}
+function updateFavCount() {
+  const n = Object.keys(state.favs).length;
+  document.getElementById('favCount').textContent = n;
+}
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+let _toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ══════════════════════════════════════════
+   TABS
+══════════════════════════════════════════ */
+function switchTab(id, el) {
+  state.activeTab = id;
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  if (id === 'compare') renderCompare();
+  if (id === 'favourites') renderFavs();
+  if (id === 'workflow') renderWorkflow();
+}
+function switchTabById(id) {
+  const btns = document.querySelectorAll('.nav-tab');
+  const map = {discover:0, workflow:1, compare:2, favourites:3};
+  switchTab(id, btns[map[id]]);
+}
+
+/* ══════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════ */
+function setType(type, el) {
+  state.typeFilter = type;
+  document.querySelectorAll('.sb-item').forEach(i => {
+    if (['全部平台','发现','排行','策展','包管理','代码搜索','数据分析','替代方案','社区'].some(l => i.textContent.includes(l)))
+      i.classList.remove('active');
+  });
+  if (el) el.classList.add('active');
+  renderCards();
+}
+
+/* ══════════════════════════════════════════
+   SEARCH
+══════════════════════════════════════════ */
+function setSearchMode(mode, el) {
+  state.searchMode = mode;
+  document.querySelectorAll('.smt-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function fillSearch(q) {
+  document.getElementById('mainSearch').value = q;
+  state.searchQuery = q;
+  execSearch();
+}
+function execSearch() {
+  const q = document.getElementById('mainSearch').value.trim();
+  state.searchQuery = q;
+  if (state.searchMode === 'ai' && q) {
+    triggerAiRec(q);
+  }
+  renderCards();
+  if (state.activeTab !== 'discover') switchTabById('discover');
+}
+
+function getFiltered() {
+  const q = state.searchQuery.toLowerCase();
+  return TOOLS.filter(t => {
+    const matchType = state.typeFilter === 'all' || t.type === state.typeFilter;
+    const matchQ = !q ||
+      t.name.toLowerCase().includes(q) ||
+      t.desc.toLowerCase().includes(q) ||
+      t.tags.some(tg => tg.toLowerCase().includes(q)) ||
+      t.scenarios.some(s => s.toLowerCase().includes(q));
+    return matchType && matchQ;
+  });
+}
+
+/* ══════════════════════════════════════════
+   SCORE COLOR
+══════════════════════════════════════════ */
+function scoreStyle(s) {
+  if (s >= 90) return `background:rgba(37,122,106,0.12);color:var(--teal);`;
+  if (s >= 83) return `background:rgba(184,137,42,0.12);color:var(--gold);`;
+  return `background:var(--surface);color:var(--muted);`;
+}
+const TYPE_LABELS = {
+  discovery:'发现导航', ranking:'排行热度', curated:'策展精选',
+  package:'包管理', search:'代码搜索', analytics:'数据分析',
+  alternative:'替代方案', community:'社区人脉'
+};
+
+/* ══════════════════════════════════════════
+   RENDER CARDS
+══════════════════════════════════════════ */
+function renderCards() {
+  const tools = getFiltered();
+  const grid = document.getElementById('toolsGrid');
+  grid.className = 'tools-grid' + (state.displayMode === 'list' ? ' list' : '');
+
+  // update panel title
+  const typeLabel = state.typeFilter === 'all' ? '全部平台' : TYPE_LABELS[state.typeFilter];
+  const qPart = state.searchQuery ? ` · 搜索"${state.searchQuery}"` : '';
+  document.getElementById('discoverTitle').textContent = `${typeLabel} · ${tools.length} 个${qPart}`;
+
+  if (!tools.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-state-icon">◎</div>
+      <p>未找到匹配的平台<br>尝试修改筛选条件或搜索关键词</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = '';
+  tools.forEach((t, i) => {
+    const isFav = !!state.favs[t.id];
+    const card = document.createElement('div');
+    card.className = 'tool-card' + (isFav ? ' favorited' : '');
+    card.style.animationDelay = `${Math.min(i, 12) * 35}ms`;
+
+    const scenariosHtml = t.scenarios.length ? `
+      <div class="tc-scenarios">
+        <div class="tc-scenarios-label">适用场景</div>
+        ${t.scenarios.map(s => `<span class="tc-scenario-chip">${s}</span>`).join('')}
+      </div>` : '';
+
+    card.innerHTML = `
+      <div class="tc-row1">
+        <div class="tc-identity">
+          <span class="tc-emoji">${t.icon}</span>
+          <div>
+            <div class="tc-name">${t.name}</div>
+            <span class="tc-url">${t.url.replace('https://','')}</span>
+          </div>
+        </div>
+        <div class="tc-meta">
+          <span class="score-badge" style="${scoreStyle(t.score)}">${t.score}</span>
+          <span class="type-badge">${TYPE_LABELS[t.type]}</span>
+        </div>
+      </div>
+      <div class="tc-desc">${t.desc}</div>
+      <div class="tc-proscons">
+        <div>
+          <div class="pc-head">优势</div>
+          <ul class="tc-pros">${t.pros.map(p=>`<li>${p}</li>`).join('')}</ul>
+        </div>
+        <div>
+          <div class="pc-head">不足</div>
+          <ul class="tc-cons">${t.cons.map(c=>`<li>${c}</li>`).join('')}</ul>
+        </div>
+      </div>
+      ${scenariosHtml}
+      <div class="tc-footer">
+        <div class="tc-tags">${t.tags.slice(0,4).map(tg=>`<span class="tc-tag">${tg}</span>`).join('')}</div>
+        <div class="tc-actions">
+          <button class="tc-btn fav-btn ${isFav?'active':''}" onclick="event.stopPropagation();toggleFav('${t.id}')">${isFav?'★ 已收藏':'☆ 收藏'}</button>
+          <a class="tc-btn go-btn" href="${t.url}" target="_blank" onclick="event.stopPropagation()">访问 →</a>
+        </div>
+      </div>
+    `;
+    card.onclick = () => openModal(t);
+    grid.appendChild(card);
+  });
+}
+
+/* ══════════════════════════════════════════
+   DISPLAY MODE
+══════════════════════════════════════════ */
+function setDisplayMode(mode, el) {
+  state.displayMode = mode;
+  document.querySelectorAll('#gridBtn,#listBtn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderCards();
+}
+
+/* ══════════════════════════════════════════
+   COMPARE TABLE
+══════════════════════════════════════════ */
+function renderCompare() {
+  const cols = [
+    {k:'search', label:'可搜索'},
+    {k:'rank',   label:'有排行'},
+    {k:'curated',label:'有策展'},
+    {k:'api',    label:'有API'},
+    {k:'free',   label:'免费'},
+    {k:'cn',     label:'中文'},
+    {k:'mobile', label:'移动端'},
+    {k:'offline',label:'离线'}
+  ];
+  let html = `<thead><tr>
+    <th>平台</th><th>类型</th><th>评分</th>
+    ${cols.map(c=>`<th>${c.label}</th>`).join('')}
+  </tr></thead><tbody>`;
+  TOOLS.forEach(t => {
+    html += `<tr>
+      <td><span style="margin-right:6px">${t.icon}</span>${t.name}</td>
+      <td style="color:var(--muted)">${TYPE_LABELS[t.type]}</td>
+      <td class="score-cell" style="${scoreStyle(t.score).replace(/;/g,';')}">${t.score}</td>
+      ${cols.map(c => {
+        const v = t.features[c.k];
+        return `<td class="${v?'cell-y':'cell-n'}">${v?'✓':'—'}</td>`;
+      }).join('')}
+    </tr>`;
+  });
+  html += '</tbody>';
+  document.getElementById('compareTable').innerHTML = html;
+}
+
+/* ══════════════════════════════════════════
+   WORKFLOW
+══════════════════════════════════════════ */
+function renderWorkflow() {
+  renderWfSteps();
+  renderWfDetail(state.wfActive);
+}
+function renderWfSteps() {
+  const container = document.getElementById('wfSteps');
+  container.innerHTML = WORKFLOWS.map((w, i) => `
+    <div class="wf-step ${i===state.wfActive?'active':''}" onclick="selectWf(${i})">
+      ${i < WORKFLOWS.length-1 ? `<div class="wf-step-arrow">›</div>` : ''}
+      <div class="wf-step-num">场景 ${i+1}</div>
+      <div class="wf-step-icon">${w.icon}</div>
+      <div class="wf-step-name">${w.name}</div>
+      <div class="wf-step-desc">${w.desc}</div>
+    </div>
+  `).join('');
+}
+function selectWf(i) {
+  state.wfActive = i;
+  renderWfSteps();
+  renderWfDetail(i);
+}
+function renderWfDetail(i) {
+  const w = WORKFLOWS[i];
+  const container = document.getElementById('wfDetails');
+  const combosHtml = w.combos.map(c => {
+    const toolObjs = c.tools.map(id => TOOLS.find(t => t.id === id)).filter(Boolean);
+    return `<div class="wf-combo" onclick="openComboModal('${c.tools.join(',')}')">
+      <div class="wf-combo-name">
+        ${c.name}
+        <span class="combo-badge">${c.badge}</span>
+      </div>
+      <div class="wf-combo-tools">
+        ${toolObjs.map(t => `<span class="wf-combo-tool" onclick="event.stopPropagation();openModal(TOOLS.find(x=>x.id==='${t.id}'))">${t.icon} ${t.name}</span>`).join('')}
+      </div>
+      <div class="wf-combo-desc">${c.desc}</div>
+    </div>`;
+  }).join('');
+
+  const tipsHtml = w.tips.map(tip => `<div class="wf-tip">${tip}</div>`).join('');
+
+  container.innerHTML = `
+    <div class="wf-detail active">
+      <div class="wf-detail-title">${w.icon} ${w.name}</div>
+      <div class="wf-detail-intro">${w.intro}</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.10em;margin-bottom:10px">推荐平台组合</div>
+      <div class="wf-combos">${combosHtml}</div>
+      <div class="wf-tips">
+        <div class="wf-tips-title">💡 实战技巧</div>
+        ${tipsHtml}
+      </div>
+    </div>
+  `;
+}
+function goWorkflow(i) {
+  state.wfActive = i;
+  switchTabById('workflow');
+}
+
+/* ══════════════════════════════════════════
+   FAVOURITES
+══════════════════════════════════════════ */
+function renderFavs() {
+  const container = document.getElementById('favsContainer');
+  const ids = Object.keys(state.favs);
+  if (!ids.length) {
+    container.innerHTML = `<div class="favs-empty">
+      <div class="favs-empty-icon">☆</div>
+      <p>还没有收藏任何平台<br>在发现页面点击 ☆ 收藏 按钮，即可保存到这里</p>
+    </div>`;
+    return;
+  }
+  container.innerHTML = ids.map(id => {
+    const t = TOOLS.find(x => x.id === id);
+    if (!t) return '';
+    const note = state.favs[id].note || '';
+    return `<div class="fav-item">
+      <div style="font-size:22px;line-height:1;margin-top:2px">${t.icon}</div>
+      <div class="fav-item-main">
+        <div class="fav-item-name">
+          ${t.name}
+          <span class="score-badge" style="${scoreStyle(t.score)}font-size:11px;padding:1px 8px;">${t.score}</span>
+        </div>
+        <div class="fav-item-desc">${t.desc}</div>
+        <textarea class="favs-note-area"
+          placeholder="添加备注，如：用于搜索 Python 库…"
+          onchange="saveFavNote('${t.id}',this.value)"
+        >${note}</textarea>
+        <div class="fav-item-actions" style="margin-top:8px">
+          <a class="tc-btn go-btn" href="${t.url}" target="_blank">访问平台 →</a>
+          <button class="tc-btn" onclick="openModal(TOOLS.find(x=>x.id==='${t.id}'))">详情</button>
+          <button class="tc-btn" onclick="toggleFav('${t.id}');renderFavs()">移除收藏</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function saveFavNote(id, note) {
+  if (state.favs[id]) { state.favs[id].note = note; saveFavs(); }
+}
+function clearFavs() {
+  if (!Object.keys(state.favs).length) return;
+  if (confirm('确认清空所有收藏？')) {
+    state.favs = {};
+    saveFavs();
+    updateFavCount();
+    renderCards();
+    renderFavs();
+    showToast('已清空收藏');
+  }
+}
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+function openModal(t) {
+  if (!t) return;
+  document.getElementById('mName').textContent = t.icon + ' ' + t.name;
+  document.getElementById('mUrl').innerHTML = `<a href="${t.url}" target="_blank" style="color:var(--blue)">${t.url}</a>`;
+
+  const featMap = {
+    search:'可搜索', rank:'有排行', curated:'有策展',
+    api:'有公开 API', free:'完全免费', cn:'中文支持',
+    mobile:'移动端', offline:'离线可用'
+  };
+  const featsHtml = Object.entries(t.features).map(([k,v]) =>
+    `<div class="modal-feature ${v?'yes':'no'}">${v?'✓':'—'} ${featMap[k]}</div>`
+  ).join('');
+
+  const combosHtml = t.combos.map(c =>
+    `<span class="modal-combo-tag" title="${c}">${c.split('=')[0].trim()}</span>`
+  ).join('');
+
+  const scenariosHtml = t.scenarios.map(s =>
+    `<span class="modal-scenario">${s}</span>`
+  ).join('');
+
+  document.getElementById('mBody').innerHTML = `
+    <div class="modal-section">
+      <div class="modal-section-title">平台简介</div>
+      <div class="modal-desc">${t.desc}</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap">
+        <span class="score-badge" style="${scoreStyle(t.score)}font-size:15px;padding:4px 14px;">${t.score} 分</span>
+        <span class="type-badge" style="font-size:11px;padding:4px 12px;">${TYPE_LABELS[t.type]}</span>
+      </div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">功能特性</div>
+      <div class="modal-features-grid">${featsHtml}</div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">优势 vs 不足</div>
+      <div class="modal-pros-cons">
+        <div class="mpc-col pros"><h4>核心优势</h4>
+          <ul>${t.pros.map(p=>`<li>${p}</li>`).join('')}</ul>
+        </div>
+        <div class="mpc-col cons"><h4>主要不足</h4>
+          <ul>${t.cons.map(c=>`<li>${c}</li>`).join('')}</ul>
+        </div>
+      </div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">适用场景</div>
+      <div class="modal-scenario-list">${scenariosHtml}</div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">推荐组合</div>
+      <div class="modal-combos-list">${combosHtml}</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <a class="modal-cta" href="${t.url}" target="_blank">前往 ${t.name} →</a>
+      <button class="icon-btn" style="padding:10px 18px" onclick="toggleFav('${t.id}');updateModalFavBtn('${t.id}');showToast(state.favs['${t.id}']?'已收藏 '+t.name:'已取消收藏')" id="modalFavBtn">
+        ${state.favs[t.id] ? '★ 已收藏' : '☆ 收藏'}
+      </button>
+    </div>
+  `;
+  document.getElementById('modalBackdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function updateModalFavBtn(id) {
+  const btn = document.getElementById('modalFavBtn');
+  if (btn) btn.textContent = state.favs[id] ? '★ 已收藏' : '☆ 收藏';
+}
+function closeModal() {
+  document.getElementById('modalBackdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeModalOut(e) {
+  if (e.target === document.getElementById('modalBackdrop')) closeModal();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ══════════════════════════════════════════
+   AI FEATURES
+══════════════════════════════════════════ */
+async function triggerAiRec(query) {
+  const panel = document.getElementById('aiInsight');
+  const spin = document.getElementById('aiSpin');
+  const text = document.getElementById('aiTextContent');
+  panel.classList.add('visible');
+  spin.classList.add('on');
+  text.textContent = '正在分析…';
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+
+  const q = query || document.getElementById('mainSearch').value || '寻找 GitHub 上的开源资源';
+  const toolList = TOOLS.map(t => `${t.name}（${TYPE_LABELS[t.type]}，评分${t.score}）`).join('、');
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user', content:
+          `你是 GitUniverse 的 AI 助手，专精 GitHub 开源资源发现。
+可用平台：${toolList}
+
+用户需求：「${q}」
+
+请用2-3段精炼中文回答：
+1. 针对这个需求，最推荐哪2-3个平台组合，为什么？
+2. 具体操作步骤是什么？（非常具体，例如"在 X 平台搜索关键词 Y"）
+3. 一句话点出最容易被忽视但有价值的技巧
+
+语言：直接、具体、有操作性，避免泛泛而谈。`
+        }]
+      })
+    });
+    const data = await res.json();
+    text.textContent = data.content[0].text;
+  } catch(e) {
+    text.textContent = `针对「${q}」的推荐：\n\n根据需求类型，建议优先组合使用 GitHub Topics（按领域标签过滤）+ Awesome Lists（系统学习该领域）+ OSS Insight（验证项目质量）。\n\n具体操作：先在 github.com/topics 搜索相关英文关键词找到精准 Topic，在结果中按 Star 排序；同时搜索对应的 awesome-[领域名] 找到策展列表；最后把候选项目放入 OSS Insight 对比其贡献者活跃度。\n\n被忽视的技巧：GitHub Topics 的 URL 格式是 github.com/topics/[关键词]，可以直接拼接访问，比搜索框更快。`;
+  } finally {
+    spin.classList.remove('on');
+  }
+}
+
+async function triggerAiInsight() {
+  const panel = document.getElementById('aiInsight');
+  const spin = document.getElementById('aiSpin');
+  const text = document.getElementById('aiTextContent');
+  panel.classList.add('visible');
+  spin.classList.add('on');
+  text.textContent = '正在生成深度洞见…';
+  if (state.activeTab !== 'discover') switchTabById('discover');
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user', content:
+          `作为 GitHub 资源发现领域的专家，用2段话给出真正有洞见的分析：
+
+1. 这 34 个平台存在一个共同的根本缺陷——它们都在解决"找到"的问题，却没有真正解决"适合我"的问题。请深入阐述这个观点，给出具体例子。
+
+2. 作为个人开发者，如何用最少的工具组合，覆盖从"发现新库"到"引入生产环境"的完整决策链？给出你认为最优的3步工作流。
+
+要有真知灼见，不要泛泛而谈。`
+        }]
+      })
+    });
+    const data = await res.json();
+    text.textContent = data.content[0].text;
+  } catch(e) {
+    text.textContent = '所有平台的共同盲点：它们提供的都是"关于项目的数据"（Stars、Downloads、Forks），却没有人解决"这个项目是否适合你的具体情境"。一个有 20k Stars 的库可能对你的项目来说是过度工程化的，一个只有 500 Stars 的库可能恰恰是最佳选择——但没有任何平台能基于你的技术栈、团队规模、维护意愿给出这种判断。\n\n个人开发者最优3步工作流：① 用 GitHub Topics 找到领域内所有候选（广度）→ ② 用 Star History 过滤掉增长停滞的项目（时效）→ ③ 用 grep.app 搜索候选库在真实项目中的用法（实际可用性）。这三步覆盖了"有哪些"、"还活着吗"、"能真正用吗"三个核心问题，是最精简的完整决策链。';
+  } finally {
+    spin.classList.remove('on');
+  }
+}
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+loadFavs();
+updateFavCount();
+renderCards();
+renderWorkflow();
+
+document.getElementById('mainSearch').addEventListener('keydown', e => {
+  if (e.key === 'Enter') execSearch();
+});
+</script>
+</body>
+</html>
